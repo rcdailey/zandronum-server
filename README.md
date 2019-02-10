@@ -14,7 +14,7 @@ services:
   doom2:
     image: rcdailey/zandronum-server
     restart: always
-    network_mode: bridge
+    network_mode: host
     command: >
       -port 10667
       -iwad /data/doom2.wad
@@ -24,8 +24,6 @@ services:
       +exec /configs/global.cfg
       +exec /configs/coop.cfg
       +exec /configs/doom2.cfg
-    ports:
-    - 10667:10667/udp
     volumes:
     - ./data:/data:ro
     - ./configs:/configs:ro
@@ -35,40 +33,53 @@ Customization of your Zandronum instance will be done through a combination of c
 configuration files. Use the `>` character (as shown above) after the `command:` property to allow
 your list of options to be on multiple lines for readability.
 
+## Host Networking
+
+Due to the inflexible nature of how Zandronum's networking code functions, I recommend using `host`
+network mode (reflected in my example above). If you prefer more network isolation and would like to
+use `bridge` network mode, please read the following section.
+
 ## Bridge Networking
 
-I do not recommend using `host` network mode. Docker containers provide excellent isolation, and for
-a service as simple as Zandronum, there is no benefit to running network mode as `host` over
-`bridge`. Of course, using `host` doesn't hurt either; this is just my personal recommendation. If
-you do choose to use bridge networking, please read this section for information relevant to port &
-ip address configuration.
+If you use `bridge` networking, LAN broadcasting (via `sv_broadcast`) does not work properly. This
+is because Zandronum addvertises the bound IP address (which is on the docker bridge subnet), which
+your LAN subnet will not have direct access to. Other than that, though, everything works. The
+sub-sections below go into more detail.
 
 ### Port Numbers
 
 Typically with Docker containers, if you want to run multiple instances of a service and run them
 each on different ports, you would simply map a different port on the host. However, the way
 Zandronum works requires some special configuration. Zandronum reports its own listening port to the
-master server
+master server.
 
 Because of this, you *must* specify a different listening port for Zandronum by giving the `-port`
 option. Note that this is only a requirement if you plan to run two or more instances of this
 container.
 
-If you change the port, make sure you map that to the host (if you're using bridge network mode,
-which is recommended). In the example above, I used port `10667` and mapped it to the host using
-`10667:10667/udp`.
+If you change the port, make sure you map that to the host. Using the example above, I used port
+`10667` and which you would map to the host by adding the following additional YAML to your
+`docker-compose.yml` file:
+
+```yml
+    ports:
+    - 10667:10667/udp
+```
 
 ### IP Address
 
-It's worth nothing that in bridge network mode, the IP address that Zandronum is listening on is
+It's worth noting that in bridge network mode, the IP address that Zandronum is listening on is
 *not* reported to the master server. Actually, the master server will list whatever IP address it
 received packets from, which will be your public IP, not the Docker bridge IP. So, no additional
-configuration is needed!
+configuration is needed for connecting via master server.
+
+Do remember, however, that the incorrect IP address is broadcast for LAN games, so if this is
+important, please use `host` for your `network_mode:` setting.
 
 ## PWAD / IWAD Selection
 
-Put all your PWAD files in a directory and map that as a volume into the container. You can put it
-anywhere. In my case, I mounted my PWAD directory to `/data` in the container.
+Put all your WAD files (PWAD + IWAD) in a directory and map that as a volume into the container. You
+can put it anywhere. In my case, I mounted my WAD directory to `/data` in the container.
 
 From there, provide the path to the main IWAD by using the `-iwad` option. Specify the `-file`
 argument one or more times to add more PWADs to your server (such as the Brutal Doom mod). Depending
