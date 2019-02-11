@@ -2,8 +2,8 @@
 FROM ubuntu:rolling AS build
 WORKDIR /build
 RUN true \
-    && apt-get update \
-    && apt-get install -yy --no-install-recommends \
+    && apt-get update -qq \
+    && apt-get install -qq --no-install-recommends \
         ca-certificates \
         mercurial \
         g++ \
@@ -11,47 +11,59 @@ RUN true \
         ninja-build \
         libssl1.0-dev \
         libsdl1.2-dev \
-        wget
+        wget \
+        > /dev/null
 
 # So we can use bash arrays (default /bin/sh doesn't support this)
 SHELL ["/bin/bash", "-c"]
 
 # Build Zandronum
+ARG REPO_URL
+ARG REPO_TAG
 RUN true \
-    && hg clone https://bitbucket.org/Torr_Samaho/zandronum-stable -r ZA_3.0 zandronum \
+    && test -n "$REPO_URL" && test -n "$REPO_TAG" \
+    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum \
     && cd zandronum \
-    && cmake -G Ninja -W no-dev -D CMAKE_BUILD_TYPE=Release -D SERVERONLY=1 . \
+    && cmake -G Ninja -W no-dev \
+        -D CMAKE_BUILD_TYPE=Release \
+        -D SERVERONLY=1 \
+        -D CMAKE_C_FLAGS="-w" \
+        -D CMAKE_CXX_FLAGS="-w" \
+        . \
     && cmake --build .
 
 # Install Zandronum
-ARG INSTALL_DIR=/usr/local/games/zandronum
-COPY zandronum-server.sh /usr/local/bin/zandronum-server
+ENV INSTALL_DIR=/usr/local/games/zandronum
+COPY docker-files/zandronum-server.sh /usr/local/bin/zandronum-server
 RUN true \
     && COPY_PATTERNS=(\
         zandronum-server \
         zandronum.pk3 \
     ) \
     && cd zandronum \
-    && mkdir -p $INSTALL_DIR \
-    && cp "${COPY_PATTERNS[@]}" $INSTALL_DIR \
-    && chmod a+x /usr/local/bin/zandronum-server
+    && mkdir -p "$INSTALL_DIR" \
+    && cp "${COPY_PATTERNS[@]}" "$INSTALL_DIR/" \
+    && bin_path=/usr/local/bin/zandronum-server \
+    && chmod a+x $bin_path \
+    && sed -i "s|INSTALL_DIR|${INSTALL_DIR}|" $bin_path
 
 # Install GeoIP.dat
 RUN true \
-    && wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz \
+    && wget -q https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz \
     && tar xvzf GeoLite2-Country.tar.gz \
-    && cp GeoLite2-Country_*/GeoLite2-Country.mmdb $INSTALL_DIR/GeoIP.dat
+    && cp GeoLite2-Country_*/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
 FROM ubuntu:rolling
 COPY --from=build /usr/local/ /usr/local/
 RUN true \
-    && apt-get update \
-    && apt-get install -yy --no-install-recommends \
+    && apt-get update -qq \
+    && apt-get install -qq --no-install-recommends \
         tini \
         libssl1.0 \
         libsdl1.2debian \
+        > /dev/null \
     && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["tini", "--", "zandronum-server"]

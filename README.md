@@ -1,5 +1,19 @@
 Host your Zandronum server using Docker!
 
+# Docker Tags
+
+There are various versions and forks of Zandronum available. The tags are in a `<distro>-<version>`
+format. The various distributions are described in the list below. Each distro has a latest tag, in
+the format `<distro>-latest`.
+
+* [**TSPG**](https://bitbucket.org/thesentinelsplayground/zatspg-release)<br>
+  A fork of the official Zandronum code base that is used for servers hosted on [The Sentinel's
+  Playground](https://allfearthesentinel.net/) (TSPG).<br>
+  Tags: `tspg-latest`, `tspg-v12`, etc
+* [**Official**](https://bitbucket.org/Torr_Samaho/zandronum)<br>
+  The unmodified & official version of Zandronum.<br>
+  Tags: `official-latest`, `official-3.0`, etc
+
 # Installation and Usage
 
 It's recommended to use Docker Compose to configure your Zandronum instance(s). This will allow you
@@ -12,7 +26,7 @@ version: '3.7'
 
 services:
   doom2:
-    image: rcdailey/zandronum-server
+    image: rcdailey/zandronum-server:official-latest
     restart: always
     network_mode: host
     command: >
@@ -32,6 +46,8 @@ services:
 Customization of your Zandronum instance will be done through a combination of command arguments and
 configuration files. Use the `>` character (as shown above) after the `command:` property to allow
 your list of options to be on multiple lines for readability.
+
+# Networking
 
 ## Host Networking
 
@@ -76,7 +92,7 @@ configuration is needed for connecting via master server.
 Do remember, however, that the incorrect IP address is broadcast for LAN games, so if this is
 important, please use `host` for your `network_mode:` setting.
 
-## PWAD / IWAD Selection
+# PWAD / IWAD Selection
 
 Put all your WAD files (PWAD + IWAD) in a directory and map that as a volume into the container. You
 can put it anywhere. In my case, I mounted my WAD directory to `/data` in the container.
@@ -91,7 +107,7 @@ Or you can use wildcards to tell Zandronum to load all PWAD files in that direct
 
     -file /data/*
 
-## Configuration Files
+# Configuration Files
 
 For in-depth configuration, especially related to controlling how gameplay will work on your server,
 you should provide configuration files. How you structure these files and how they are named are up
@@ -103,7 +119,7 @@ I'll provide the contents of the config files I used in the above example. Some 
 want, such as the master server list configuration. But mostly this is meant to give you some ideas
 on how to set up your server.
 
-### `/configs/global.cfg`
+## `/configs/global.cfg`
 
 This is the configuration I give to *all* of my servers, regardless of their purpose.
 
@@ -115,7 +131,7 @@ set sv_markchatlines true
 set masterhostname "master.zandronum.com:15300"
 ```
 
-### `/configs/coop.cfg`
+## `/configs/coop.cfg`
 
 I keep my cooperative gameplay settings in its own config file. This allows me to share these
 settings between multiple server instances (I run more than one server from Docker Compose).
@@ -136,7 +152,7 @@ set teamdamage 0
 set compatflags 620756992
 ```
 
-### `/configs/doom2.cfg`
+## `/configs/doom2.cfg`
 
 This last config is dedicated to just the doom2 service in my `docker-compose.yml`, which represents
 a single server instance:
