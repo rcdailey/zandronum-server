@@ -1,5 +1,7 @@
 Host your Zandronum server using Docker!
 
+[![Build Status](https://travis-ci.com/rcdailey/zandronum-server.svg?branch=master)](https://travis-ci.com/rcdailey/zandronum-server)
+
 # Docker Tags
 
 There are various versions and forks of Zandronum available. The tags are in a `<distro>-<version>`
