@@ -1,8 +1,10 @@
+# Zandronum Server Docker Images
+
 Host your Zandronum server using Docker!
 
 [![Build Status](https://travis-ci.com/rcdailey/zandronum-server.svg?branch=master)](https://travis-ci.com/rcdailey/zandronum-server)
 
-# Docker Tags
+## Docker Tags
 
 There are various versions and forks of Zandronum available. The tags are in a `<distro>-<version>`
 format. The various distributions are described in the list below. Each distro has a latest tag, in
@@ -16,7 +18,7 @@ the format `<distro>-latest`.
   The unmodified & official version of Zandronum.<br>
   Tags: `official-latest`, `official-3.0`, etc
 
-# Installation and Usage
+## Installation and Usage
 
 It's recommended to use Docker Compose to configure your Zandronum instance(s). This will allow you
 great flexibility over the configuration of your containers. Below is an example that will help get
@@ -49,22 +51,22 @@ Customization of your Zandronum instance will be done through a combination of c
 configuration files. Use the `>` character (as shown above) after the `command:` property to allow
 your list of options to be on multiple lines for readability.
 
-# Networking
+## Networking
 
-## Host Networking
+### Host Networking
 
 Due to the inflexible nature of how Zandronum's networking code functions, I recommend using `host`
 network mode (reflected in my example above). If you prefer more network isolation and would like to
 use `bridge` network mode, please read the following section.
 
-## Bridge Networking
+### Bridge Networking
 
 If you use `bridge` networking, LAN broadcasting (via `sv_broadcast`) does not work properly. This
 is because Zandronum addvertises the bound IP address (which is on the docker bridge subnet), which
 your LAN subnet will not have direct access to. Other than that, though, everything works. The
 sub-sections below go into more detail.
 
-### Port Numbers
+#### Port Numbers
 
 Typically with Docker containers, if you want to run multiple instances of a service and run them
 each on different ports, you would simply map a different port on the host. However, the way
@@ -84,7 +86,7 @@ If you change the port, make sure you map that to the host. Using the example ab
     - 10667:10667/udp
 ```
 
-### IP Address
+#### IP Address
 
 It's worth noting that in bridge network mode, the IP address that Zandronum is listening on is
 *not* reported to the master server. Actually, the master server will list whatever IP address it
@@ -94,7 +96,7 @@ configuration is needed for connecting via master server.
 Do remember, however, that the incorrect IP address is broadcast for LAN games, so if this is
 important, please use `host` for your `network_mode:` setting.
 
-# PWAD / IWAD Selection
+## PWAD / IWAD Selection
 
 Put all your WAD files (PWAD + IWAD) in a directory and map that as a volume into the container. You
 can put it anywhere. In my case, I mounted my WAD directory to `/data` in the container.
@@ -109,7 +111,7 @@ Or you can use wildcards to tell Zandronum to load all PWAD files in that direct
 
     -file /data/*
 
-# Configuration Files
+## Configuration Files
 
 For in-depth configuration, especially related to controlling how gameplay will work on your server,
 you should provide configuration files. How you structure these files and how they are named are up
@@ -121,7 +123,7 @@ I'll provide the contents of the config files I used in the above example. Some 
 want, such as the master server list configuration. But mostly this is meant to give you some ideas
 on how to set up your server.
 
-## `/configs/global.cfg`
+### `/configs/global.cfg`
 
 This is the configuration I give to *all* of my servers, regardless of their purpose.
 
@@ -133,7 +135,7 @@ set sv_markchatlines true
 set masterhostname "master.zandronum.com:15300"
 ```
 
-## `/configs/coop.cfg`
+### `/configs/coop.cfg`
 
 I keep my cooperative gameplay settings in its own config file. This allows me to share these
 settings between multiple server instances (I run more than one server from Docker Compose).
@@ -154,7 +156,7 @@ set teamdamage 0
 set compatflags 620756992
 ```
 
-## `/configs/doom2.cfg`
+### `/configs/doom2.cfg`
 
 This last config is dedicated to just the doom2 service in my `docker-compose.yml`, which represents
 a single server instance:
@@ -172,7 +174,7 @@ addmap MAP04
 addmap MAP05
 ```
 
-# Building the Images
+## Building the Images
 
 The `Dockerfile` takes two arguments when you run `docker build` (provided via the `--build-arg`
 option):
