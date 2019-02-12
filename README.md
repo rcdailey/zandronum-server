@@ -171,3 +171,14 @@ addmap MAP03
 addmap MAP04
 addmap MAP05
 ```
+
+# Building the Images
+
+The `Dockerfile` takes two arguments when you run `docker build` (provided via the `--build-arg`
+option):
+
+* `REPO_URL`<br>
+  The Mercurial repository URL (HTTPS only) of the Zandronum code base. This can be the official
+  repo or a compatible fork.
+* `REPO_TAG`<br>
+  The tag in the repository to clone & build.
