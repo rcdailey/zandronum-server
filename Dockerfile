@@ -66,4 +66,6 @@ RUN true \
         > /dev/null \
     && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["tini", "--", "zandronum-server"]
+COPY ./docker-files/entrypoint.sh /
+RUN chmod a+rx /entrypoint.sh
+ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
