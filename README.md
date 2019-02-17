@@ -51,6 +51,8 @@ Customization of your Zandronum instance will be done through a combination of c
 configuration files. Use the `>` character (as shown above) after the `command:` property to allow
 your list of options to be on multiple lines for readability.
 
+For more examples, see the `examples` directory in this repository.
+
 ## Networking
 
 ### Host Networking
