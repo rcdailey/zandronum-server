@@ -2,6 +2,9 @@
 
 Host your Zandronum server using Docker!
 
+* [Docker Hub](https://hub.docker.com/r/rcdailey/zandronum-server)
+* [Github Repository](https://github.com/rcdailey/zandronum-server)
+
 [![Build Status](https://travis-ci.com/rcdailey/zandronum-server.svg?branch=master)](https://travis-ci.com/rcdailey/zandronum-server)
 
 ## Docker Tags
