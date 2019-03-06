@@ -64,7 +64,7 @@ use `bridge` network mode, please read the following section.
 ### Bridge Networking
 
 If you use `bridge` networking, LAN broadcasting (via `sv_broadcast`) does not work properly. This
-is because Zandronum addvertises the bound IP address (which is on the docker bridge subnet), which
+is because Zandronum advertises the bound IP address (which is on the docker bridge subnet), which
 your LAN subnet will not have direct access to. Other than that, though, everything works. The
 sub-sections below go into more detail.
 

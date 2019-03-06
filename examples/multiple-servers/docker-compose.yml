@@ -3,11 +3,6 @@ version: '3.7'
 services:
   doom1:
     image: rcdailey/zandronum-server:tspg-latest
-    build:
-      context: source
-      args:
-      - REPO_URL=https://bitbucket.org/thesentinelsplayground/zatspg-release
-      - REPO_TAG=TSPGv12
     restart: always
     network_mode: host
     volumes:
@@ -24,11 +19,6 @@ services:
 
   doom2:
     image: rcdailey/zandronum-server:tspg-latest
-    build:
-      context: source
-      args:
-      - REPO_URL=https://bitbucket.org/thesentinelsplayground/zatspg-release
-      - REPO_TAG=TSPGv12
     restart: always
     network_mode: host
     volumes:
@@ -54,8 +44,8 @@ services:
       -port 10668
       -iwad /data/pretend_doom2.wad
       -file /data/pretend_sentinels_lexicon.pk3
-      +sv_hostname "The Sentinel Lexicon Server"
       +exec /configs/global.cfg
       +exec /configs/coop.cfg
+      +sv_hostname "The Sentinel Lexicon Server"
       +map VR
       +lexicon_timer_start 60
