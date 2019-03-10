@@ -116,6 +116,51 @@ Or you can use wildcards to tell Zandronum to load all PWAD files in that direct
 
     -file /data/*
 
+## User & Group
+
+Inside the container, `zandronum-server` runs as user `doomguy` and group `zandronum`. The
+corresponding UID and GID is determined by Docker. If you want to have explicit control over either
+the UID or GID used inside the container, you can specify the following environment variables. Note
+that overriding this behavior is really only useful if you want to properly map file permissions in
+your host volumes to the user running in the container.
+
+* `ZANDRONUM_UID`<br>
+  The User ID on the *host machine* that will be assigned to the `doomguy` user in the container.
+* `ZANDRONUM_GID`<br>
+  The Group ID on the *host machine* that will be assigned to the `zandronum` group in the
+  container.
+
+Note that it is an error to run this image using the `-u`/`--user` argument to `docker run` or the
+`user:` property in `docker-compose.yml`. The container *itself* must start as a root user, but the
+`zandronum-server` process is started using the local user & group.
+
+### Examples
+
+As an example, you can add the following attributes to the existing YAML example file (shown
+earlier) which will assign the `doomguy` user to UID 1000 and GID 1050:
+
+```yml
+environment:
+- ZANDRONUM_UID=1000
+- ZANDRONUM_GID=1050
+```
+
+Or you can map these to environment variables you defined in your `~/.bashrc`, for example (based on
+Ubuntu 18.04):
+
+```bash
+export UID
+export GID="$(id -g)"
+```
+
+Which you would use in your `docker-compose.yml` like so:
+
+```yml
+environment:
+- ZANDRONUM_UID=$UID
+- ZANDRONUM_GID=$GID
+```
+
 ## Configuration Files
 
 For in-depth configuration, especially related to controlling how gameplay will work on your server,

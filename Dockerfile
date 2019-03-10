@@ -63,9 +63,16 @@ RUN true \
         tini \
         libssl1.0 \
         libsdl1.2debian \
+        gosu \
         > /dev/null \
     && rm -rf /var/lib/apt/lists/*
 
+# Environment variables used to map host UID/GID to internal
+# user used to launch zandronum-server.
+ENV ZANDRONUM_UID= \
+    ZANDRONUM_GID=
+
+# Entrypoint
 COPY ./docker-files/entrypoint.sh /
-RUN chmod a+rx /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
