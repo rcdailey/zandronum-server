@@ -1,5 +1,5 @@
 # Build stage for compiling Zandronum
-FROM ubuntu:rolling AS build
+FROM ubuntu:18.10 AS build
 WORKDIR /build
 RUN true \
     && apt-get update -qq \
@@ -60,7 +60,7 @@ RUN true \
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
-FROM ubuntu:rolling
+FROM ubuntu:18.10
 COPY --from=build /usr/local/ /usr/local/
 RUN true \
     && apt-get update -qq \
