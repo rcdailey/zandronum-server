@@ -16,6 +16,6 @@ matrix:
 script:
 - ./travis-scripts/build-image.sh $BUILD_REPO_URL $BUILD_REPO_TAG $BUILD_IMAGE_TAGS
 - |
-  if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" ]]; then
+  if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST == "false" ]]; then
       ./travis-scripts/push-images.sh
   fi
