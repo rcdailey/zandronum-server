@@ -10,8 +10,8 @@ matrix:
     - name: "TSPG Zandronum Build"
       env:
       - BUILD_REPO_URL=https://bitbucket.org/thesentinelsplayground/zatspg-release
-      - BUILD_REPO_TAG=TSPGv12
-      - BUILD_IMAGE_TAGS="tspg-latest tspg-v12"
+      - BUILD_REPO_TAG=TSPGv14
+      - BUILD_IMAGE_TAGS="tspg-latest tspg-v14"
 
 script:
 - ./travis-scripts/build-image.sh $BUILD_REPO_URL $BUILD_REPO_TAG $BUILD_IMAGE_TAGS
