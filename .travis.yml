@@ -6,7 +6,7 @@ matrix:
       env:
       - BUILD_REPO_URL=https://bitbucket.org/Torr_Samaho/zandronum-stable
       - BUILD_REPO_TAG=ZA_3.0.1
-      - BUILD_IMAGE_TAGS="official-latest official-3.0.1"
+      - BUILD_IMAGE_TAGS="official-latest official-3.0"
     - name: "TSPG Zandronum Build"
       env:
       - BUILD_REPO_URL=https://bitbucket.org/thesentinelsplayground/zatspg-release
