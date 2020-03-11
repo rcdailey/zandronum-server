@@ -1,5 +1,5 @@
 # Build stage for compiling Zandronum
-FROM ubuntu:18.10 AS build
+FROM ubuntu:19.10 AS build
 WORKDIR /build
 RUN true \
     && apt-get update -qq \
@@ -9,7 +9,7 @@ RUN true \
         g++ \
         cmake \
         ninja-build \
-        libssl1.0-dev \
+        libssl-dev \
         libsdl1.2-dev \
         wget \
         > /dev/null
@@ -60,13 +60,13 @@ RUN true \
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
-FROM ubuntu:18.10
+FROM ubuntu:19.10
 COPY --from=build /usr/local/ /usr/local/
 RUN true \
     && apt-get update -qq \
     && apt-get install -qq --no-install-recommends \
         tini \
-        libssl1.0 \
+        libssl1.1 \
         libsdl1.2debian \
         gosu \
         > /dev/null \
