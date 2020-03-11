@@ -53,10 +53,7 @@ RUN true \
     && sed -i "s|INSTALL_DIR|${INSTALL_DIR}|" $bin_path
 
 # Install GeoIP.dat
-RUN true \
-    && wget -q https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz \
-    && tar xvzf GeoLite2-Country.tar.gz \
-    && cp GeoLite2-Country_*/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
+COPY docker-files/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
