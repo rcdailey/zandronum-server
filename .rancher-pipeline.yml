@@ -9,10 +9,6 @@ stages:
       registry: index.docker.io
     env:
       PLUGIN_BUILD_ARGS: "REPO_URL=https://bitbucket.org/Torr_Samaho/zandronum,REPO_TAG=ZA_3.0.1"
-- name: Deploy
-  steps:
-  - applyYamlConfig:
-      path: ./rancher/deployment.yaml
 timeout: 60
 branch:
   include:
