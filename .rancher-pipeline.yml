@@ -7,6 +7,8 @@ stages:
       tag: llamallama/zandronum-server:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: index.docker.io
+    env:
+      PLUGIN_BUILD_ARGS: "REPO_URL=https://bitbucket.org/Torr_Samaho/zandronum,REPO_TAG=ZA_3.0.1"
 - name: Deploy
   steps:
   - applyYamlConfig:
