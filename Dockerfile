@@ -23,8 +23,8 @@ SHELL ["/bin/bash", "-c"]
 COPY docker-files/patches /patches
 
 # Build Zandronum
-ARG REPO_URL
-ARG REPO_TAG
+ARG REPO_URL=https://bitbucket.org/Torr_Samaho/zandronum
+ARG REPO_TAG=ZA_3.0.1
 RUN true \
     && test -n "$REPO_URL" && test -n "$REPO_TAG" \
     && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum \
