@@ -25,10 +25,10 @@ COPY docker-files/patches /patches
 # Build Zandronum
 ARG REPO_URL
 ARG REPO_TAG
-RUN echo "$REPO_URL : $REPO_TAG"
+
 RUN true \
-    && test -n "$REPO_URL" && test -n "$REPO_TAG"
-#    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum \
+    && test -n "$REPO_URL" && test -n "$REPO_TAG" \
+    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum
 #    && cd zandronum \
 #    && shopt -s nullglob \
 #    && for p in /patches/*.patch; do patch -p1 < $p; done \
