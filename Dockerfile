@@ -1,6 +1,7 @@
 # Build stage for compiling Zandronum
-FROM ubuntu:19.10 AS build
+FROM ubuntu:20.04 AS build
 WORKDIR /build
+ENV DEBIAN_FRONTEND=noninteractive
 RUN true \
     && apt-get update -qq \
     && apt-get install -qq --no-install-recommends \
@@ -57,7 +58,7 @@ COPY docker-files/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 COPY --from=build /usr/local/ /usr/local/
 RUN true \
     && apt-get update -qq \
