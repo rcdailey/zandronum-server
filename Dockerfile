@@ -11,6 +11,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -qq --no-install-recommends zandronum-server \
     && cp ./usr/games/zandronum/libcrypto.so.1.0.0 ./usr/lib/x86_64-linux-gnu/ \
+    && apt-get -qq autoremove wget gnupg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
