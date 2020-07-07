@@ -17,6 +17,9 @@ RUN apt-get update \
 
 ENV INSTALL_DIR=/usr/games/zandronum
 
+# Install GeoIP.dat
+COPY docker-files/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
+
 # Environment variables used to map host UID/GID to internal
 # user used to launch zandronum-server.
 ENV ZANDRONUM_UID= \

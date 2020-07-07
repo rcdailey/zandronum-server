@@ -20,4 +20,5 @@ useradd doomguy --create-home ${UID_OPTION-} \
     || true # Do not fail if user already exists
 
 # Start the zandronum-server process with local user & group
+cd "$INSTALL_DIR" || false
 gosu doomguy:zandronum zandronum-server -host "$@"
