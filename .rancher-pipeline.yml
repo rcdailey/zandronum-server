@@ -1,0 +1,15 @@
+stages:
+- name: Build
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: llamallama/zandronum-server:${CICD_EXECUTION_SEQUENCE}
+      pushRemote: true
+      registry: index.docker.io
+timeout: 60
+branch:
+  include:
+  - chris-master
+  - master
+notification: {}
