@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  coop:
+    image: zandronum-server
+    restart: always
+    network_mode: host
+    volumes:
+    - ./data:/data:ro
+    - ./:/servers:ro
+    command: coop
