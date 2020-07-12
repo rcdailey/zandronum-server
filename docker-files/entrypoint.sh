@@ -10,15 +10,6 @@ then
   exit 1
 fi
 
-# Global array that will contain the server parameters
-paramsArray=
-
-# Creates the zandronum server paramaters from a passed in param file
-function createParams {
-  paramsFile="${1}"
-  IFS=' ' read -r -a paramsArray <<< "$(cat "${paramsFile}" | tr '\n' ' ')"
-}
-
 serverFolder='servers'      # Containers the folder the server configs live in
 currentServerFile='current' # The file containing the name of the server folder
 paramsFile='params'         # The file that contains the zandronum server params
@@ -29,8 +20,8 @@ currentServer="$(cat "${serverFolder}/${mode}/${currentServerFile}")"
 # Create the full path to the params file
 paramsFilePath="${serverFolder}/${mode}/${currentServer}/${paramsFile}"
 
-# Create the paramaters array from the params file
-createParams "$paramsFilePath"
+# Source the paramaters array from the params file
+source "$paramsFilePath"
 
 # Do not allow container to be started as non-root user
 if (( "$(id -u)" != 0 )); then
@@ -52,5 +43,5 @@ useradd doomguy --create-home ${UID_OPTION-} \
 
 # Start the zandronum-server process with local user & group
 cd "$INSTALL_DIR" || false
-echo gosu doomguy:zandronum zandronum-server -host "${paramsArray[@]}"
-gosu doomguy:zandronum zandronum-server -host "${paramsArray[@]}"
+echo gosu doomguy:zandronum zandronum-server -host "${params[@]}"
+gosu doomguy:zandronum zandronum-server -host "${params[@]}"

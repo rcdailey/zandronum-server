@@ -1,6 +1,8 @@
--port 10666
--iwad /data/DOOM2.WAD
--file /data/brutalv21.pk3
-+exec /servers/global/global.cfg
-+exec /servers/coop/brutal/server.cfg
-+exec /servers/coop/brutal/maps.cfg
+params=(
+  -port 10666
+  -iwad /data/DOOM2.WAD
+  -file /data/brutalv21.pk3
+  +exec /servers/global/global.cfg
+  +exec /servers/coop/brutal/server.cfg
+  +exec /servers/coop/brutal/maps.cfg
+)
