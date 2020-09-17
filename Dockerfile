@@ -13,6 +13,7 @@ RUN true \
         libssl-dev \
         libsdl1.2-dev \
         wget \
+        patch \
         > /dev/null
 
 # So we can use bash arrays (default /bin/sh doesn't support this)
@@ -22,6 +23,7 @@ SHELL ["/bin/bash", "-c"]
 COPY docker-files/patches /patches
 
 # Build Zandronum
+# Patches are also applied (make sure they are UTF-8 encoded)
 ARG REPO_URL
 ARG REPO_TAG
 RUN true \
