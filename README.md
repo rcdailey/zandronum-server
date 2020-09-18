@@ -87,8 +87,8 @@ If you change the port, make sure you map that to the host. Using the example ab
 `docker-compose.yml` file:
 
 ```yml
-    ports:
-    - 10667:10667/udp
+ports:
+- 10667:10667/udp
 ```
 
 #### IP Address
@@ -110,11 +110,15 @@ From there, provide the path to the main IWAD by using the `-iwad` option. Speci
 argument one or more times to add more PWADs to your server (such as the Brutal Doom mod). Depending
 on how you mapped your volumes, you may specify individual PWAD files:
 
-    -file /data/mywad.pk3
+```txt
+-file /data/mywad.pk3
+```
 
 Or you can use wildcards to tell Zandronum to load all PWAD files in that directory:
 
-    -file /data/*
+```txt
+-file /data/*
+```
 
 ## User & Group
 
@@ -177,7 +181,7 @@ on how to set up your server.
 
 This is the configuration I give to *all* of my servers, regardless of their purpose.
 
-```
+```txt
 set sv_broadcast 0
 set sv_updatemaster 1
 set sv_enforcemasterbanlist true
@@ -190,7 +194,7 @@ set masterhostname "master.zandronum.com:15300"
 I keep my cooperative gameplay settings in its own config file. This allows me to share these
 settings between multiple server instances (I run more than one server from Docker Compose).
 
-```
+```txt
 set sv_maxplayers 8
 set sv_maxclients 8
 set sv_unblockplayers 1
@@ -211,7 +215,7 @@ set compatflags 620756992
 This last config is dedicated to just the doom2 service in my `docker-compose.yml`, which represents
 a single server instance:
 
-```
+```txt
 set sv_hostname "This is the DOOM2 Server"
 set sv_maprotation true
 set sv_randommaprotation 1
