@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  official:
+    image: rcdailey/zandronum-server:official-local
+    build:
+      context: ..
+      args:
+        - REPO_URL=https://hg.osdn.net/view/zandronum/zandronum-stable
+        - REPO_TAG=4178904d7698
+
+  tspg:
+    image: rcdailey/zandronum-server:tspg-local
+    build:
+      context: ..
+      args:
+        - REPO_URL=http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta
+        - REPO_TAG=TSPGv26
