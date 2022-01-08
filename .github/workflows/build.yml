@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: build
 
 on: [push, pull_request]
@@ -11,13 +12,13 @@ jobs:
         image_tag_base: [official, tspg]
         include:
           - repo_url: https://hg.osdn.net/view/zandronum/zandronum-stable
-            repo_tag: ZA_3.0.1
+            repo_tag: 4178904d7698 # there is no tag for 3.1
             image_tag_base: official
-            image_tag_version: 3.0.1
-          - repo_url: https://hg.drinkybird.net/zatspg-release
-            repo_tag: TSPGv21
+            image_tag_version: 3.1.0
+          - repo_url: http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta
+            repo_tag: TSPGv26
             image_tag_base: tspg
-            image_tag_version: v21
+            image_tag_version: v26
     steps:
       -
         name: Checkout Source Code

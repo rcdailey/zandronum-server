@@ -19,19 +19,24 @@ RUN true \
 # So we can use bash arrays (default /bin/sh doesn't support this)
 SHELL ["/bin/bash", "-c"]
 
-# Copy in patches to apply to Zandronum code base, as needed
-COPY docker-files/patches /patches
-
-# Build Zandronum
-# Patches are also applied (make sure they are UTF-8 encoded)
 ARG REPO_URL
 ARG REPO_TAG
+
+# Clone the Repository
 RUN true \
     && test -n "$REPO_URL" && test -n "$REPO_TAG" \
-    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum \
-    && cd zandronum \
+    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum
+
+WORKDIR /build/zandronum
+
+# Apply Manual Patches (make sure they are UTF-8 encoded)
+COPY docker-files/patches /patches
+RUN true \
     && shopt -s nullglob \
-    && for p in /patches/*.patch; do patch -p1 < $p; done \
+    && for p in /patches/*.patch; do patch -p1 < $p; done
+
+# Build Zandronum
+RUN true \
     && cmake -G Ninja -W no-dev \
         -D CMAKE_BUILD_TYPE=Release \
         -D SERVERONLY=1 \
@@ -48,7 +53,6 @@ RUN true \
         zandronum-server \
         zandronum.pk3 \
     ) \
-    && cd zandronum \
     && mkdir -p "$INSTALL_DIR" \
     && cp "${COPY_PATTERNS[@]}" "$INSTALL_DIR/" \
     && bin_path=/usr/local/bin/zandronum-server \

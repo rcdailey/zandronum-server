@@ -13,13 +13,13 @@ There are various versions and forks of Zandronum available. The tags are in a `
 format. The various distributions are described in the list below. Each distro has a latest tag, in
 the format `<distro>-latest`.
 
-* [**TSPG**](https://bitbucket.org/thesentinelsplayground/zatspg-release)<br>
+* [**Official**](https://osdn.net/projects/zandronum/scm/hg/zandronum-stable)<br>
+  The unmodified & official version of Zandronum.<br>
+  Tags: `official-latest`, `official-3.1.0`, etc
+* [**TSPG**](https://osdn.net/users/doomjoshuaboy/pf/zatspg-beta/wiki/FrontPage)<br>
   A fork of the official Zandronum code base that is used for servers hosted on [The Sentinel's
   Playground](https://allfearthesentinel.net/) (TSPG).<br>
-  Tags: `tspg-latest`, `tspg-v12`, etc
-* [**Official**](https://bitbucket.org/Torr_Samaho/zandronum)<br>
-  The unmodified & official version of Zandronum.<br>
-  Tags: `official-latest`, `official-3.0`, etc
+  Tags: `tspg-latest`, `tspg-v26`, etc
 
 ## Installation and Usage
 
