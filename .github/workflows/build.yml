@@ -18,7 +18,7 @@ jobs:
           - repo_url: http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta
             repo_tag: TSPGv26
             image_tag_base: tspg
-            image_tag_version: v26
+            image_tag_version: v31
     steps:
       -
         name: Checkout Source Code
