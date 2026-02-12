@@ -3,68 +3,158 @@ name: build
 
 on:
   push:
-    branches: [master]
+    # TEMPORARILY DISABLE FOR TESTING
+    # branches: [master]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
+env:
+  REGISTRY_IMAGE: ${{ github.repository }}
+
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # List these here so that they are used as display names in Github Actions Web UI
-        image_tag_base: [official, tspg]
+        variant: [official, tspg]
+        arch:
+          - name: amd64
+            runner: ubuntu-latest
+          - name: arm64
+            runner: ubuntu-24.04-arm
         include:
-          - repo_url: https://foss.heptapod.net/zandronum/zandronum-stable
+          - variant: official
+            repo_url: https://foss.heptapod.net/zandronum/zandronum-stable
             repo_tag: ZA_3.2.1
-            image_tag_base: official
-            image_tag_version: 3.2.1
-          - repo_url: http://hg.code.sf.net/p/zandronum-tspg/code
+          - variant: tspg
+            repo_url: http://hg.code.sf.net/p/zandronum-tspg/code
             repo_tag: TSPGv32
-            image_tag_base: tspg
-            image_tag_version: v32
+    runs-on: ${{ matrix.arch.runner }}
     steps:
       -
-        name: Checkout Source Code
+        name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       -
-        name: Docker QEmu Setup
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+        name: Install Build Dependencies
+        run: >
+          sudo apt-get update -qq &&
+          sudo apt-get install -qq --no-install-recommends
+          mercurial g++ cmake ninja-build ccache patch
+          libssl-dev libsdl1.2-compat-dev libopus-dev
+          > /dev/null
       -
-        name: Docker Buildx Setup
+        name: Restore ccache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ~/.cache/ccache
+          key: ccache-${{ matrix.variant }}-${{ matrix.arch.name }}-${{ matrix.repo_tag }}
+          restore-keys: |
+            ccache-${{ matrix.variant }}-${{ matrix.arch.name }}-
+      -
+        name: Configure ccache
+        run: ccache --set-config max_size=2G --set-config compress=true
+      -
+        name: Build Zandronum
+        env:
+          REPO_URL: ${{ matrix.repo_url }}
+          REPO_TAG: ${{ matrix.repo_tag }}
+          VARIANT: ${{ matrix.variant }}
+          DIST_DIR: dist
+        run: ./build.sh
+      -
+        name: Show ccache Stats
+        run: ccache --show-stats
+      -
+        name: Upload Artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ${{ matrix.variant }}-${{ matrix.arch.name }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+
+  package:
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [official, tspg]
+        include:
+          - variant: official
+            image_tag_version: 3.2.1
+          - variant: tspg
+            image_tag_version: v32
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      -
+        name: Download amd64 Artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: ${{ matrix.variant }}-amd64
+          path: dist/amd64
+      -
+        name: Download arm64 Artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: ${{ matrix.variant }}-arm64
+          path: dist/arm64
+      -
+        name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
       -
         name: Docker Login
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
-        if: github.ref == 'refs/heads/master'
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       -
-        name: Docker Build & Push
-        uses: docker/build-push-action@601a80b39c9405e50806ae38af30926f9d957c47 # v6.19.1
+        name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=raw,value=${{ matrix.variant }}-latest
+            type=raw,value=${{ matrix.variant }}-${{ matrix.image_tag_version }}
+      -
+        name: Build and Push amd64
+        id: build-amd64
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
-          # Only publish new images when building the master branch
-          push: ${{ github.ref == 'refs/heads/master' }}
-          platforms: linux/amd64,linux/arm64
-          build-args: |
-            REPO_URL=${{ matrix.repo_url }}
-            REPO_TAG=${{ matrix.repo_tag }}
-            VARIANT=${{ matrix.image_tag_base }}
-          cache-from: type=gha,scope=${{ matrix.image_tag_base }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.image_tag_base }}
-          tags: |
-            ${{ github.repository }}:${{ matrix.image_tag_base }}-latest
-            ${{ github.repository }}:${{ matrix.image_tag_base }}-${{ matrix.image_tag_version }}
+          platforms: linux/amd64
+          build-args: DIST_DIR=dist/amd64
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+      -
+        name: Build and Push arm64
+        id: build-arm64
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          platforms: linux/arm64
+          build-args: DIST_DIR=dist/arm64
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+      -
+        name: Create Manifest List and Push
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            ${{ env.REGISTRY_IMAGE }}@${{ steps.build-amd64.outputs.digest }} \
+            ${{ env.REGISTRY_IMAGE }}@${{ steps.build-arm64.outputs.digest }}
       -
         name: Update Repository Description
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
-        if: github.ref == 'refs/heads/master'
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}

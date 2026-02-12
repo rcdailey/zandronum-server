@@ -1,74 +1,12 @@
-# Build stage for compiling Zandronum
-FROM ubuntu:22.04 AS build
-WORKDIR /build
-ENV DEBIAN_FRONTEND=noninteractive
-RUN true \
-    && apt-get update -qq \
-    && apt-get install -qq --no-install-recommends \
-        ca-certificates \
-        mercurial \
-        g++ \
-        cmake \
-        ninja-build \
-        libssl-dev \
-        libsdl1.2-compat-dev \
-        libopus-dev \
-        wget \
-        patch \
-        > /dev/null
-
-# So we can use bash arrays (default /bin/sh doesn't support this)
-SHELL ["/bin/bash", "-c"]
-
-ARG REPO_URL
-ARG REPO_TAG
-ARG VARIANT
-
-# Clone the Repository
-RUN true \
-    && test -n "$REPO_URL" && test -n "$REPO_TAG" \
-    && hg clone "$REPO_URL" -r "$REPO_TAG" zandronum
-
-WORKDIR /build/zandronum
-
-# Apply patches: common first, then variant-specific
-COPY docker-files/patches /patches
-RUN true \
-    && test -n "$VARIANT" \
-    && shopt -s nullglob \
-    && for p in /patches/common/*.patch /patches/"$VARIANT"/*.patch; do patch -p1 < "$p"; done
-
-# Build Zandronum
-RUN true \
-    && cmake -G Ninja -W no-dev \
-        -D CMAKE_BUILD_TYPE=Release \
-        -D SERVERONLY=1 \
-        -D CMAKE_C_FLAGS="-w" \
-        -D CMAKE_CXX_FLAGS="-w" \
-        . \
-    && cmake --build .
-
-# Install Zandronum
-ENV INSTALL_DIR=/usr/local/games/zandronum
-COPY docker-files/zandronum-server.sh /usr/local/bin/zandronum-server
-RUN true \
-    && COPY_PATTERNS=(\
-        zandronum-server \
-        zandronum.pk3 \
-    ) \
-    && mkdir -p "$INSTALL_DIR" \
-    && cp "${COPY_PATTERNS[@]}" "$INSTALL_DIR/" \
-    && bin_path=/usr/local/bin/zandronum-server \
-    && chmod a+x $bin_path \
-    && sed -i "s|INSTALL_DIR|${INSTALL_DIR}|" $bin_path
-
-# Install GeoIP.dat
-COPY docker-files/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
-
-# Final stage for running the zandronum server.
-# Copies over everything in /usr/local.
 FROM ubuntu:22.04
-COPY --from=build /usr/local/ /usr/local/
+
+ARG DIST_DIR=dist
+
+COPY ${DIST_DIR}/zandronum-server ${DIST_DIR}/zandronum.pk3 /usr/local/games/zandronum/
+COPY docker-files/zandronum-server.sh /usr/local/bin/zandronum-server
+COPY docker-files/GeoLite2-Country.mmdb /usr/local/games/zandronum/GeoIP.dat
+COPY docker-files/entrypoint.sh /entrypoint.sh
+
 RUN true \
     && apt-get update -qq \
     && apt-get install -qq --no-install-recommends \
@@ -79,14 +17,12 @@ RUN true \
         libopus0 \
         gosu \
         > /dev/null \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /entrypoint.sh /usr/local/bin/zandronum-server
 
 # Environment variables used to map host UID/GID to internal
 # user used to launch zandronum-server.
 ENV ZANDRONUM_UID= \
     ZANDRONUM_GID=
 
-# Entrypoint
-COPY ./docker-files/entrypoint.sh /
-RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
