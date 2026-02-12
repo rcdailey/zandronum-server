@@ -39,12 +39,14 @@ docker compose build tspg
 docker build \
     --build-arg REPO_URL=https://foss.heptapod.net/zandronum/zandronum-stable \
     --build-arg REPO_TAG=ZA_3.2.1 \
+    --build-arg VARIANT=official \
     -t rcdailey/zandronum-server:official-local .
 
 # Build with plain Docker (TSPG variant)
 docker build \
-    --build-arg REPO_URL=http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta \
-    --build-arg REPO_TAG=TSPGv26 \
+    --build-arg REPO_URL=http://hg.code.sf.net/p/zandronum-tspg/code \
+    --build-arg REPO_TAG=TSPGv32 \
+    --build-arg VARIANT=tspg \
     -t rcdailey/zandronum-server:tspg-local .
 ```
 
@@ -71,10 +73,11 @@ The Dockerfile uses a multi-stage build pattern:
 
 ### Build Args
 
-Two required build args control which Zandronum variant to build:
+Three required build args control which Zandronum variant to build:
 
 - `REPO_URL`: Mercurial repository URL
 - `REPO_TAG`: Tag or commit hash to clone
+- `VARIANT`: Build variant name (`official` or `tspg`); selects variant-specific patches
 
 ### RUN Command Style
 
@@ -148,13 +151,20 @@ Zandronum `.cfg` files in `examples/`:
 
 ## Patch System
 
-Patches in `docker-files/patches/` are applied during build with `patch -p1`. Files MUST:
+Patches are organized by variant under `docker-files/patches/`:
+
+```txt
+docker-files/patches/
+  common/        # Applied to all variants
+  official/      # Only for official builds
+  tspg/          # Only for TSPG builds
+```
+
+The Dockerfile applies `common/*.patch` first, then `$VARIANT/*.patch`. Files MUST:
 
 - Use `.patch` extension
 - Be UTF-8 encoded
-- Apply cleanly against the target `REPO_TAG`
-
-When no patches are needed, keep the directory populated with a placeholder file.
+- Apply cleanly against the target `REPO_TAG` with `patch -p1`
 
 ## Git Conventions
 

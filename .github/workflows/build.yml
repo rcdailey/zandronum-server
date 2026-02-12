@@ -19,10 +19,10 @@ jobs:
             repo_tag: ZA_3.2.1
             image_tag_base: official
             image_tag_version: 3.2.1
-          - repo_url: http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta
-            repo_tag: TSPGv26
+          - repo_url: http://hg.code.sf.net/p/zandronum-tspg/code
+            repo_tag: TSPGv32
             image_tag_base: tspg
-            image_tag_version: v26
+            image_tag_version: v32
     steps:
       -
         name: Checkout Source Code
@@ -51,6 +51,7 @@ jobs:
           build-args: |
             REPO_URL=${{ matrix.repo_url }}
             REPO_TAG=${{ matrix.repo_tag }}
+            VARIANT=${{ matrix.image_tag_base }}
           cache-from: type=gha,scope=${{ matrix.image_tag_base }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image_tag_base }}
           tags: |

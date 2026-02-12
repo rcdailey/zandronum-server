@@ -1,0 +1,21 @@
+--- a/src/tspg_dnsbl.cpp
++++ b/src/tspg_dnsbl.cpp
+@@ -217,8 +217,7 @@
+ 		}
+ 	}
+ 
+-	// tmp?
+-	TSPG_KickBannedPlayers();
++	// Kicking is handled by kickIp() in parseResponse().
+ }
+ 
+ void parseResponse(json& res)
+@@ -234,7 +233,7 @@
+ 		comment.Format("An IP masking service (VPN) has been detected. Please disable it before connecting (%s).", reason.c_str());
+ 
+ 		std::string unused;
+-		SERVERBAN_GetBanList()->addEntry(address.c_str(), nullptr, comment, unused, tExpiration);
++		SERVERBAN_GetBanList()[0].addEntry(address.c_str(), nullptr, comment, unused, tExpiration);
+ 
+ 		NETADDRESS_s netaddr;
+ 		netaddr.LoadFromString(address.c_str());

@@ -16,10 +16,10 @@ the format `<distro>-latest`.
 * [**Official**](https://foss.heptapod.net/zandronum/zandronum-stable)<br>
   The unmodified & official version of Zandronum.<br>
   Tags: `official-latest`, `official-3.2.1`, etc
-* [**TSPG**](https://osdn.net/users/doomjoshuaboy/pf/zatspg-beta/wiki/FrontPage)<br>
+* [**TSPG**](https://sourceforge.net/projects/zandronum-tspg/)<br>
   A fork of the official Zandronum code base that is used for servers hosted on [The Sentinel's
   Playground](https://allfearthesentinel.net/) (TSPG).<br>
-  Tags: `tspg-latest`, `tspg-v26`, etc
+  Tags: `tspg-latest`, `tspg-v32`, etc
 
 ## Installation and Usage
 
@@ -227,11 +227,13 @@ addmap MAP05
 
 ## Building the Images
 
-The `Dockerfile` takes two arguments when you run `docker build` (provided via the `--build-arg`
+The `Dockerfile` takes three arguments when you run `docker build` (provided via the `--build-arg`
 option):
 
 * `REPO_URL`<br>
-  The Mercurial repository URL (HTTPS only) of the Zandronum code base. This can be the official
-  repo or a compatible fork.
+  The Mercurial repository URL of the Zandronum code base. This can be the official repo or a
+  compatible fork.
 * `REPO_TAG`<br>
   The tag in the repository to clone & build.
+* `VARIANT`<br>
+  The build variant name (`official` or `tspg`). Selects which variant-specific patches to apply.

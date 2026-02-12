@@ -6,11 +6,13 @@ services:
       args:
         - REPO_URL=https://foss.heptapod.net/zandronum/zandronum-stable
         - REPO_TAG=ZA_3.2.1
+        - VARIANT=official
 
   tspg:
     image: rcdailey/zandronum-server:tspg-local
     build:
       context: .
       args:
-        - REPO_URL=http://hg.pf.osdn.net/view/d/do/doomjoshuaboy/zatspg-beta
-        - REPO_TAG=TSPGv26
+        - REPO_URL=http://hg.code.sf.net/p/zandronum-tspg/code
+        - REPO_TAG=TSPGv32
+        - VARIANT=tspg

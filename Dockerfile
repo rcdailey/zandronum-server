@@ -22,6 +22,7 @@ SHELL ["/bin/bash", "-c"]
 
 ARG REPO_URL
 ARG REPO_TAG
+ARG VARIANT
 
 # Clone the Repository
 RUN true \
@@ -30,11 +31,12 @@ RUN true \
 
 WORKDIR /build/zandronum
 
-# Apply Manual Patches (make sure they are UTF-8 encoded)
+# Apply patches: common first, then variant-specific
 COPY docker-files/patches /patches
 RUN true \
+    && test -n "$VARIANT" \
     && shopt -s nullglob \
-    && for p in /patches/*.patch; do patch -p1 < "$p"; done
+    && for p in /patches/common/*.patch /patches/"$VARIANT"/*.patch; do patch -p1 < "$p"; done
 
 # Build Zandronum
 RUN true \
