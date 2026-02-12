@@ -1,5 +1,5 @@
 # Build stage for compiling Zandronum
-FROM ubuntu:20.04 AS build
+FROM ubuntu:22.04 AS build
 WORKDIR /build
 ENV DEBIAN_FRONTEND=noninteractive
 RUN true \
@@ -11,7 +11,7 @@ RUN true \
         cmake \
         ninja-build \
         libssl-dev \
-        libsdl1.2-dev \
+        libsdl1.2-compat-dev \
         libopus-dev \
         wget \
         patch \
@@ -65,14 +65,16 @@ COPY docker-files/GeoLite2-Country.mmdb "$INSTALL_DIR/GeoIP.dat"
 
 # Final stage for running the zandronum server.
 # Copies over everything in /usr/local.
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 COPY --from=build /usr/local/ /usr/local/
 RUN true \
     && apt-get update -qq \
     && apt-get install -qq --no-install-recommends \
         tini \
-        libssl1.1 \
-        libsdl1.2debian \
+        libssl3 \
+        # libsdl1.2-compat-shim places libSDL-1.2.so.0 on the standard library path
+        libsdl1.2-compat-shim \
+        libopus0 \
         gosu \
         > /dev/null \
     && rm -rf /var/lib/apt/lists/*
