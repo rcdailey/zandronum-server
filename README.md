@@ -13,9 +13,9 @@ There are various versions and forks of Zandronum available. The tags are in a `
 format. The various distributions are described in the list below. Each distro has a latest tag, in
 the format `<distro>-latest`.
 
-* [**Official**](https://osdn.net/projects/zandronum/scm/hg/zandronum-stable)<br>
+* [**Official**](https://foss.heptapod.net/zandronum/zandronum-stable)<br>
   The unmodified & official version of Zandronum.<br>
-  Tags: `official-latest`, `official-3.1.0`, etc
+  Tags: `official-latest`, `official-3.2.1`, etc
 * [**TSPG**](https://osdn.net/users/doomjoshuaboy/pf/zatspg-beta/wiki/FrontPage)<br>
   A fork of the official Zandronum code base that is used for servers hosted on [The Sentinel's
   Playground](https://allfearthesentinel.net/) (TSPG).<br>
@@ -29,8 +29,6 @@ you started on setting up your own server. There isn't one true way to configure
 lot of flexibility. But it is easier to start by using this example and then adjusting it as needed.
 
 ```yml
-version: '3.7'
-
 services:
   doom2:
     image: rcdailey/zandronum-server:official-latest
@@ -149,8 +147,7 @@ environment:
 - ZANDRONUM_GID=1050
 ```
 
-Or you can map these to environment variables you defined in your `~/.bashrc`, for example (based on
-Ubuntu 18.04):
+Or you can map these to environment variables you defined in your `~/.bashrc`, for example:
 
 ```bash
 export UID

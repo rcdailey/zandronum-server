@@ -64,9 +64,9 @@ builds both variants for linux/amd64 and linux/arm64. Images are pushed to Docke
 
 The Dockerfile uses a multi-stage build pattern:
 
-1. **Build stage** (`FROM ubuntu:20.04 AS build`): installs build tools, clones Zandronum source via
+1. **Build stage** (`FROM ubuntu:22.04 AS build`): installs build tools, clones Zandronum source via
    Mercurial, applies patches, compiles with CMake + Ninja
-2. **Runtime stage** (`FROM ubuntu:20.04`): copies only `/usr/local/` from build stage, installs
+2. **Runtime stage** (`FROM ubuntu:22.04`): copies only `/usr/local/` from build stage, installs
    minimal runtime dependencies
 
 ### Build Args
@@ -173,7 +173,7 @@ When no patches are needed, keep the directory populated with a placeholder file
 
 - Keep the Dockerfile minimal; only install what the runtime strictly needs
 - Use multi-stage builds to avoid shipping build tools in the final image
-- Pin base image OS versions (e.g., `ubuntu:20.04`, not `ubuntu:latest`)
+- Pin base image OS versions (e.g., `ubuntu:22.04`, not `ubuntu:latest`)
 - Clean up apt caches in the runtime stage (`rm -rf /var/lib/apt/lists/*`)
 - Test image builds locally with `docker compose build` before pushing
 

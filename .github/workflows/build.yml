@@ -1,7 +1,10 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: build
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -41,20 +44,23 @@ jobs:
         name: Docker Build & Push
         uses: docker/build-push-action@601a80b39c9405e50806ae38af30926f9d957c47 # v6.19.1
         with:
+          context: .
           # Only publish new images when building the master branch
           push: ${{ github.ref == 'refs/heads/master' }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             REPO_URL=${{ matrix.repo_url }}
             REPO_TAG=${{ matrix.repo_tag }}
+          cache-from: type=gha,scope=${{ matrix.image_tag_base }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image_tag_base }}
           tags: |
-            rcdailey/zandronum-server:${{ matrix.image_tag_base }}-latest
-            rcdailey/zandronum-server:${{ matrix.image_tag_base }}-${{ matrix.image_tag_version }}
+            ${{ github.repository }}:${{ matrix.image_tag_base }}-latest
+            ${{ github.repository }}:${{ matrix.image_tag_base }}-${{ matrix.image_tag_version }}
       -
         name: Update Repository Description
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
         if: github.ref == 'refs/heads/master'
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          DOCKERHUB_REPOSITORY: rcdailey/zandronum-server
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          repository: ${{ github.repository }}

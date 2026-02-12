@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -exu
 
 # Set the working directory to the Zandronum installation dir. This is so it can find its own files,
 # like zandronum.pk3, GeoIP.dat, etc.

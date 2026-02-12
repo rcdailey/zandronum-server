@@ -34,7 +34,7 @@ WORKDIR /build/zandronum
 COPY docker-files/patches /patches
 RUN true \
     && shopt -s nullglob \
-    && for p in /patches/*.patch; do patch -p1 < $p; done
+    && for p in /patches/*.patch; do patch -p1 < "$p"; done
 
 # Build Zandronum
 RUN true \
