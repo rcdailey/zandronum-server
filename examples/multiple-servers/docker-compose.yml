@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   doom1:
     image: rcdailey/zandronum-server:tspg-latest

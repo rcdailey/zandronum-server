@@ -14,7 +14,7 @@ example configs, and documentation.
 ```txt
 Dockerfile                              # Multi-stage build: compile Zandronum + runtime image
 README.md                               # User-facing documentation
-dev-build/docker-compose.yml            # Local dev builds for both variants
+docker-compose.yml                      # Local dev builds for both variants
 docker-files/entrypoint.sh              # Container entrypoint (user/group setup, process launch)
 docker-files/zandronum-server.sh        # Wrapper script setting working directory for binary
 docker-files/patches/                   # Patch files applied during build (*.patch)
@@ -27,18 +27,18 @@ examples/multiple-servers/              # Example multi-server Docker Compose se
 
 ```bash
 # Build both image variants locally (official + TSPG)
-docker compose -f dev-build/docker-compose.yml build
+docker compose build
 
 # Build only the official variant
-docker compose -f dev-build/docker-compose.yml build official
+docker compose build official
 
 # Build only the TSPG variant
-docker compose -f dev-build/docker-compose.yml build tspg
+docker compose build tspg
 
 # Build with plain Docker (official variant)
 docker build \
-    --build-arg REPO_URL=https://hg.osdn.net/view/zandronum/zandronum-stable \
-    --build-arg REPO_TAG=4178904d7698 \
+    --build-arg REPO_URL=https://foss.heptapod.net/zandronum/zandronum-stable \
+    --build-arg REPO_TAG=ZA_3.2.1 \
     -t rcdailey/zandronum-server:official-local .
 
 # Build with plain Docker (TSPG variant)
@@ -131,7 +131,7 @@ RUN apt-get update && apt-get install package-a package-b
 
 ## Docker Compose Conventions
 
-- Use version `'3'` for dev builds, `'3.7'` for user-facing examples
+- Omit the top-level `version` attribute (obsolete in Compose v2)
 - Volume mounts for read-only data SHOULD use `:ro` suffix
 - Use `network_mode: host` as the recommended networking approach
 - Use `>` for multi-line `command:` values for readability
@@ -175,7 +175,7 @@ When no patches are needed, keep the directory populated with a placeholder file
 - Use multi-stage builds to avoid shipping build tools in the final image
 - Pin base image OS versions (e.g., `ubuntu:20.04`, not `ubuntu:latest`)
 - Clean up apt caches in the runtime stage (`rm -rf /var/lib/apt/lists/*`)
-- Test image builds locally with `dev-build/docker-compose.yml` before pushing
+- Test image builds locally with `docker compose build` before pushing
 
 ## Don't
 

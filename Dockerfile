@@ -12,6 +12,7 @@ RUN true \
         ninja-build \
         libssl-dev \
         libsdl1.2-dev \
+        libopus-dev \
         wget \
         patch \
         > /dev/null
